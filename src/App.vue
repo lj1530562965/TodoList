@@ -1,31 +1,32 @@
 <template>
     <div id="app" class="container">
       <h1>Todos</h1>
-      <div style="padding-bottom: 10px;width: 365px;margin: 0 auto;">
-          <span class="glyphicon glyphicon-chevron-down" style="color: #e6e6e6;float:left;line-height: 35px;" @click="showAll"></span>
-          <input type="text" class="form-control" placeholder="What needs to be done?" style="width: 325px;margin: 0 auto;" v-model="newItem" @keyup.enter="addNews" >
+      <div style="padding-bottom: 10px;width: 365px;margin: 0 auto;position: relative">
+          <span class="glyphicon glyphicon-chevron-down" style="color: #e6e6e6;float:left;line-height: 35px;margin-right: 5px;" @click="showAll"></span>
+          <input type="text" class="form-control" placeholder="What needs to be done?" style="width: 325px;" v-model="newItem" @keyup.enter="addNews" >
+          <span style="color: red;position: absolute;top: 10%;right: -25%;" v-show="errormsg">* 输入框不能为空</span>
       </div>
       <div class="tabbable" id="tabs-74955">
           <table class="table tab-content" style="width: 355px;margin: 0 auto;" v-if="isShowAll">
                   <tbody class="tab-pane active" id="panel-1">
-                      <tr v-for="(item,index) in items" v-bind:class="{'cur':item.state==true}">
+                      <tr v-for="(item,index) in items" v-bind:class="{'cur':item.state==true}" v-on:mouseover="showDeleteTag($event)" v-on:mouseout="hideDeleteTag($event)">
                           <td class="col-md-1"><input type="checkbox" v-model="item.state" name="checkbox" @change="checkfn"></td>
-                          <td><span v-bind:class="{ 'line-through': item.state }">{{item.label}}</span></td>
-                          <td><span class="glyphicon glyphicon-remove" style="color:#cc9a9a;" @click="deleteTodo(index)"></span></td>
+                          <td class="col-md-9"><span v-bind:class="{ 'line-through': item.state }">{{item.label}}</span></td>
+                          <td><span class="glyphicon glyphicon-remove" style="color:#cc9a9a;" v-show="isShowDeleteTag" @click="deleteTodo(index)"></span></td>
                       </tr>
                   </tbody>
                   <tbody class="tab-pane" id="panel-2">
-                      <tr v-for="(item,index) in items" v-if="item.state==false" v-bind:class="{'cur':item.state==true}">
+                      <tr v-for="(item,index) in items" v-if="item.state==false" v-bind:class="{'cur':item.state==true}" v-on:mouseover="showDeleteTag($event)" v-on:mouseout="hideDeleteTag($event)">
                           <td class="col-md-1"><input type="checkbox" v-model="item.state" name="checkbox" @change="checkfn"></td>
-                          <td><span v-bind:class="{ 'line-through': item.state }">{{item.label}}</span></td>
-                          <td><span class="glyphicon glyphicon-remove" style="color:#cc9a9a;" @click="deleteTodo(index)"></span></td>
+                          <td class="col-md-9"><span v-bind:class="{ 'line-through': item.state }">{{item.label}}</span></td>
+                          <td><span class="glyphicon glyphicon-remove" style="color:#cc9a9a;" v-show="isShowDeleteTag" @click="deleteTodo(index)"></span></td>
                       </tr>
                   </tbody>
                   <tbody class="tab-pane" id="panel-3">
-                      <tr v-for="(item,index) in items" v-if="item.state==true" v-bind:class="{'cur':item.state==true}">
+                      <tr v-for="(item,index) in items" v-if="item.state==true" v-bind:class="{'cur':item.state==true}" v-on:mouseover="showDeleteTag($event)" v-on:mouseout="hideDeleteTag($event)">
                           <td class="col-md-1"><input type="checkbox" v-model="item.state" name="checkbox" @change="checkfn"></td>
-                          <td><span v-bind:class="{ 'line-through': item.state }">{{item.label}}</span></td>
-                          <td><span class="glyphicon glyphicon-remove" style="color:#cc9a9a;" @click="deleteTodo(index)"></span></td>
+                          <td class="col-md-9"><span v-bind:class="{ 'line-through': item.state }">{{item.label}}</span></td>
+                          <td><span class="glyphicon glyphicon-remove" style="color:#cc9a9a;" v-show="isShowDeleteTag" @click="deleteTodo(index)"></span></td>
                       </tr>
                   </tbody>
           </table>
@@ -61,7 +62,9 @@ export default {
             newItem:'',
             isShowAll:true,
             falseflag:[],
-            trueflag:[]
+            trueflag:[],
+            errormsg:false,
+            isShowDeleteTag:false
         }
   },
   mounted: function () {
@@ -94,6 +97,10 @@ export default {
   },
   methods: {
         addNews () {
+            if(this.newItem==''){
+                this.errormsg = true
+            }else{
+            this.errormsg = false
             this.items.push({
                 "label":this.newItem,
                 "state":false
@@ -101,7 +108,22 @@ export default {
             this.newItem='';
             this.isShowDeleteTag = false
             this.falseflagfn()
+            }
         },
+       showDeleteTag (e) {
+          if(e.target.parentNode.nodeName=='TR'){
+              e.target.parentNode.lastChild.childNodes[0].style.display='block'
+          }else if(e.target.parentNode.nodeName=='TD'){
+              e.target.parentNode.parentNode.lastChild.childNodes[0].style.display='block'
+          }
+       },
+       hideDeleteTag (e) {
+          if(e.target.parentNode.nodeName=='TR'){
+              e.target.parentNode.lastChild.childNodes[0].style.display='none'
+          }else if(e.target.parentNode.nodeName=='TD'){
+              e.target.parentNode.parentNode.lastChild.childNodes[0].style.display='none'
+          }
+       },
         deleteTodo (index) {
             this.items.splice(index, 1)
             this.falseflagfn()
@@ -121,7 +143,6 @@ export default {
                     this.falseflag.push(this.items[i])
                 }
             }
-            console.log(this.falseflag)
         },
         trueflagfn () {
             this.trueflag = []
@@ -130,7 +151,6 @@ export default {
                     this.trueflag.push(this.items[i])
                 }
             }
-            console.log(this.trueflag)
         },
         cleartrueflagfn () {
             this.trueflag = []
@@ -163,5 +183,8 @@ ul li{
 }
 .cur{
     background-color: #efefef;
+}
+.table>tbody+tbody{
+    border-top: 0;
 }
 </style>
