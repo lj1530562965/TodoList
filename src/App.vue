@@ -9,7 +9,7 @@
       <div class="tabbable" id="tabs-74955">
           <table class="table tab-content" style="width: 355px;margin: 0 auto;" v-if="isShowAll">
                   <tbody class="tab-pane active" id="panel-1">
-                      <tr v-for="(item,index) in items" v-bind:class="{'cur':item.state==true}" v-on:mouseover="showDeleteTag($event)" v-on:mouseout="hideDeleteTag($event)">
+                      <tr v-for="(item,index) in items" v-bind:class="{'cur':item.state==true}" v-on:mouseover="showDeleteTag" v-on:mouseout="hideDeleteTag($event)">
                           <td class="col-md-1"><input type="checkbox" v-model="item.state" name="checkbox" @change="checkfn"></td>
                           <td class="col-md-9"><span v-bind:class="{ 'line-through': item.state }">{{item.label}}</span></td>
                           <td><span class="glyphicon glyphicon-remove" style="color:#cc9a9a;" v-show="isShowDeleteTag" @click="deleteTodo(index)"></span></td>
@@ -111,11 +111,7 @@ export default {
             }
         },
        showDeleteTag (e) {
-          if(e.target.parentNode.nodeName=='TR'){
-              e.target.parentNode.lastChild.childNodes[0].style.display='block'
-          }else if(e.target.parentNode.nodeName=='TD'){
-              e.target.parentNode.parentNode.lastChild.childNodes[0].style.display='block'
-          }
+          e.currentTarget.lastChild.childNodes[0].style.display='block'
        },
        hideDeleteTag (e) {
           if(e.target.parentNode.nodeName=='TR'){
